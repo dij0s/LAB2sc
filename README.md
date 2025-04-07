@@ -1,3 +1,10 @@
+## Introduction
+
+The following repository allows for the following:
+
+1. Sending instructions (commands) to a robot agent.
+2. Await photos from the robot agent.
+
 ## Setup
 
 1. Clone this repository
@@ -38,7 +45,7 @@ app:
     - XMPP_JID=client@prosody            # XMPP account username
     - XMPP_PASSWORD=password             # XMPP account password
     - ROBOT_RECIPIENT=alpha-pi-zero-agent@prosody  # Target robot agent
-    - ROBOT_INSTRUCTIONS=forward,backward,left,right,stop  # Sequence of commands
+    - ROBOT_INSTRUCTIONS=forward,backward,left,right,stop  # Sequence of commands to send to the robot
   volumes:
     - .:/app                             # Application code
     - ./received_photos:/app/received_photos  # Photo storage
