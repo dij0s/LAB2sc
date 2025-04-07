@@ -18,6 +18,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - .:/app
+      - ./received_photos:/app/received_photos
       - ./certs:/app/certs:ro # Mount certificates in the app container
     environment:
       - XMPP_JID=client@prosody
