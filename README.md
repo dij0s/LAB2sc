@@ -1,7 +1,11 @@
 ## Setup
 
 1. Clone this repository
-2. Start the docker compose stack:
+2. If not done, generate the prosody certificates:
+   ```
+   ./generate_certs.sh
+   ```
+3. Start the docker compose stack:
    ```
    docker compose up
    ```
