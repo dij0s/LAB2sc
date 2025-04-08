@@ -1,0 +1,23 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - ./received_photos:/app/received_photos
+      - ./certs:/app/certs:ro
+    environment:
+      - XMPP_JID=client@prosody
+      - XMPP_PASSWORD=password
+      - ROBOT_RECIPIENT=alpha-pi-4b-agent@prosody
+      - ROBOT_INSTRUCTIONS=forward,backward,left,right,stop
+    extra_hosts:
+      - "prosody:172.20.0.2"
+    networks:
+      - xmpp_network
+
+networks:
+  xmpp_network:
+    external: true
+    name: prosody_xmpp_network

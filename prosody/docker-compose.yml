@@ -1,0 +1,20 @@
+services:
+  prosody:
+    image: prosody/prosody:latest
+    container_name: prosody
+    ports:
+      - "5222:5222"
+      - "5269:5269"
+    volumes:
+      - ./prosody.cfg.lua:/etc/prosody/prosody.cfg.lua:ro
+      - ./certs:/etc/prosody/certs:ro
+    networks:
+      xmpp_network:
+        ipv4_address: 172.20.0.2
+
+networks:
+  xmpp_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
