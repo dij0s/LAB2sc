@@ -43,11 +43,10 @@ Container.security_layer = aioxmpp.security_layer.SecurityLayer(
 async def run_alphabot_controller():
     xmpp_jid = os.getenv("XMPP_JID")
     xmpp_password = os.getenv("XMPP_PASSWORD")
-    robot_recipient = os.getenv(
-        "ROBOT_RECIPIENT", "alpha-pi-zero-agent@prosody"
-    )
+    robot_recipient = os.getenv("ROBOT_RECIPIENT")
 
-    instructions_str = os.getenv("ROBOT_INSTRUCTIONS", "forward")
+    instructions_str = os.getenv("ROBOT_INSTRUCTIONS")
+
     instructions = [instr.strip() for instr in instructions_str.split(",")]
 
     logger.info(f"Starting AlphabotController with JID: {xmpp_jid}")

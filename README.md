@@ -5,25 +5,39 @@ The following repository allows for the following:
 1. Sending instructions (commands) to a robot agent.
 2. Await photos from the robot agent.
 
-## Setup
+## Running the application
 
 1. Clone this repository
 2. If not done, generate the prosody certificates:
 ```bash
+cd prosody
 ./generate_certs.sh
 ```
-3. Start the docker compose stack:
+3. Start the Prosody XMPP server:
 ```bash
+cd prosody
 docker compose up
+```
+4. Define prosody host entry:
+```
+# /etc/hosts
+192.168.237.111   prosody
+```
+5. Install dependencies and run the command sender:
+```bash
+# Install dependencies using uv
+uv sync
+
+# Run the command sender with configuration
+uv run --env-file .env.xmpp.conf src/runner.py
 ```
 
 ## Configuration
 
-### Docker Compose Configuration
+### Prosody Server Configuration
 
-The `docker-compose.yml` file can be customized in several ways:
+The `prosody/docker-compose.yml` file configures the XMPP server:
 
-#### Prosody Service
 ```yaml
 prosody:
   image: prosody/prosody:latest
@@ -38,54 +52,28 @@ prosody:
       ipv4_address: 172.20.0.2  # Fixed IP address for prosody
 ```
 
-#### Application Service
-```yaml
-app:
-  environment:
-    - XMPP_JID=client@prosody            # XMPP account username
-    - XMPP_PASSWORD=password             # XMPP account password
-    - ROBOT_RECIPIENT=alpha-pi-zero-agent@prosody  # Target robot agent
-    - ROBOT_INSTRUCTIONS=forward,backward,left,right,stop  # Sequence of commands to send to the robot
-  volumes:
-    - .:/app                             # Application code
-    - ./received_photos:/app/received_photos  # Photo storage
-    - ./certs:/app/certs:ro              # TLS certificates
-```
+### Command Sender Configuration
 
-#### Network Configuration
-```yaml
-networks:
-  xmpp_network:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16  # Network subnet for container communication
+The command sender is configured through environment variables in `.env.xmpp.conf`:
+
+```conf
+XMPP_JID=client@prosody            # XMPP account username
+XMPP_PASSWORD=password             # XMPP account password
+ROBOT_RECIPIENT=alpha-pi-4b-agent@prosody  # Target robot agent
+ROBOT_INSTRUCTIONS=forward,backward,left,right,stop  # Sequence of commands
 ```
 
 ### Environment Variables
 
-The following environment variables can be modified in the docker-compose.yml:
+The following environment variables can be configured in `.env.xmpp.conf`:
 
 - `XMPP_JID`: The Jabber ID for the client (format: username@domain)
 - `XMPP_PASSWORD`: The password for XMPP authentication
 - `ROBOT_RECIPIENT`: The Jabber ID of the target robot
 - `ROBOT_INSTRUCTIONS`: Comma-separated list of instructions to send to the robot
 
-### Network Settings
-
-To ensure proper communication between agents:
-
-1. Both services must be on the same network (`xmpp_network`)
-2. Prosody server needs a fixed IP (`172.20.0.2` in this example)
-3. The app service must reference Prosody's IP in `extra_hosts`
-
 ### Volumes
 
-The following directories are mounted:
+The following directories are used:
 - `./received_photos`: Where photos from the robot are stored
 - `./certs`: Contains TLS certificates for secure communication
-- Application code is mounted at `/app` in the container
-
-## Saved Photos
-
-All received photos are saved in the `received_photos` directory with timestamps in the filename.
