@@ -3,6 +3,8 @@ import logging
 import os
 import ssl
 
+import json
+
 import aiosasl
 import aioxmpp.security_layer
 from spade.container import Container
@@ -40,16 +42,25 @@ Container.security_layer = aioxmpp.security_layer.SecurityLayer(
 )
 
 
-async def run_alphabot_controller():
+async def run_alphabot_controller(instructions=[]):
     xmpp_jid = os.getenv("XMPP_JID")
     xmpp_password = os.getenv("XMPP_PASSWORD")
     robot_recipient = os.getenv("ROBOT_RECIPIENT")
 
-    instructions_str = os.getenv("ROBOT_INSTRUCTIONS")
+    final_instructions = []
 
-    instructions = [instr.strip() for instr in instructions_str.split(",")]
+    for instr in instructions:
+        final_instructions.append(instr["command"] + " ")
+        for a in instr["args"]:
+            string = a
+            if a != instr["args"][-1]:
+                string += " "
+            final_instructions[-1] += string
 
     logger.info(f"Starting AlphabotController with JID: {xmpp_jid}")
+
+    for i, instr in enumerate(final_instructions):
+        logger.info(f"Instruction {i + 1}: {instr}")
 
     alphabot_controller = AlphabotController(
         jid=xmpp_jid, password=xmpp_password
@@ -57,7 +68,7 @@ async def run_alphabot_controller():
     await alphabot_controller.start(auto_register=True)
 
     send_instructions_behaviour = alphabot_controller.SendInstructionsBehaviour(
-        robot_recipient, instructions
+        robot_recipient, final_instructions
     )
     alphabot_controller.add_behaviour(send_instructions_behaviour)
 
@@ -82,11 +93,16 @@ async def run_camera_receiver():
     return receiver
 
 
-async def main():
+async def main(command_file="./commands/command.json"):
     os.makedirs("received_photos", exist_ok=True)
 
+    with open(command_file, "r") as file:
+        data = json.load(file)
+
+    commands = data["commands"]
+
     try:
-        alphabot_controller = await run_alphabot_controller()
+        alphabot_controller = await run_alphabot_controller(commands)
         camera_receiver = await run_camera_receiver()
 
         if not camera_receiver:
