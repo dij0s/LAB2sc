@@ -1,19 +1,23 @@
-import base64
-import aiofiles
 import asyncio
-import os
+import base64
 import datetime
+import os
+
+import aiofiles
 from spade import agent, behaviour
 from spade.message import Message
+
 
 class ReceiverAgent(agent.Agent):
     class RequestPhotoBehaviour(behaviour.OneShotBehaviour):
         async def run(self):
             # Create a message to request a photo
-            msg = Message(to="camera_agent@prosody")  # Replace with the actual JID of the camera agent
+            msg = Message(
+                to="camera_agent@prosody"
+            )  # Replace with the actual JID of the camera agent
             msg.set_metadata("performative", "request")
             msg.body = "Requesting photo"
-            
+
             # Send the message
             await self.send(msg)
             print("Request for photo sent.")
@@ -46,11 +50,12 @@ class ReceiverAgent(agent.Agent):
         self.add_behaviour(self.RequestPhotoBehaviour())
         self.add_behaviour(self.ReceivePhotoBehaviour())
 
+
 async def main():
     xmpp_server = os.getenv("XMPP_SERVER", "localhost")
     xmpp_username = os.getenv("CAMERA_USERNAME", "receiver_agent")
     xmpp_password = os.getenv("CAMERA_PASSWORD", "top_secret")
-  
+
     receiver = ReceiverAgent(f"{xmpp_username}@{xmpp_server}", xmpp_password)
 
     await receiver.start(auto_register=True)
@@ -70,6 +75,7 @@ async def main():
     finally:
         # Clean up: stop the agent
         await receiver.stop()
+
 
 if __name__ == "__main__":
     asyncio.run(main())
