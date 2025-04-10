@@ -52,7 +52,7 @@ module:hook("message/full", function(event)
 end, 10);
 
 -- Hook for outgoing messages
-module:hook("message/out", function(event)
+module:hook("message/bare", function(event)
     process_message(event.stanza, "sent");
     return nil;
 end, 10);
