@@ -28,6 +28,17 @@ services:
       xmpp_network:
         ipv4_address: 172.20.0.4
 
+  dashboard:
+    image: dij0s/expose:latest
+    container_name: xmpp_dashboard
+    depends_on:
+      - api
+    ports:
+      - "8888:8888"
+    networks:
+      xmpp_network:
+        ipv4_address: 172.20.0.5
+
 networks:
   xmpp_network:
     driver: bridge

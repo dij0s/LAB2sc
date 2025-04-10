@@ -12,11 +12,14 @@ const server = serve({
 
     // WebSocket upgrade
     if (url.pathname === "/ws") {
+      console.log("WebSocket connection attempt"); // Debug logging
       const upgraded = server.upgrade(req);
-      if (!upgraded) {
-        return new Response("WebSocket upgrade failed", { status: 400 });
+      if (upgraded) {
+        console.log("WebSocket upgrade successful"); // Debug logging
+        return undefined;
       }
-      return new Response();
+      console.log("WebSocket upgrade failed"); // Debug logging
+      return new Response("WebSocket upgrade failed", { status: 400 });
     }
 
     // API status endpoint
