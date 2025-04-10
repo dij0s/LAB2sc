@@ -2,6 +2,7 @@
 
 local http = require "net.http";
 local json = require "util.json";
+local uuid = require "util.uuid";
 
 -- Configuration
 local api_endpoint = module:get_option_string("message_monitor_endpoint", "http://172.20.0.3:3000/api/messages");
@@ -15,16 +16,19 @@ local function process_message(stanza, direction)
     local to = stanza.attr.to;
     local body = stanza:get_child_text("body");
     local message_type = stanza.attr.type or "normal";
+    local message_id = stanza.attr.id or uuid.generate();
 
     -- Only process messages with body content
     if body then
         local message_data = {
+            id = message_id,
             from = from,
             to = to,
             body = body,
             type = message_type,
             direction = direction,
-            timestamp = os.time()
+            timestamp = os.time(),
+            conversation_id = from < to and (from .. "-" .. to) or (to .. "-" .. from)
         }
 
         -- Send data to API endpoint
@@ -52,7 +56,7 @@ module:hook("message/full", function(event)
 end, 10);
 
 -- Hook for outgoing messages
-module:hook("message/bare", function(event)
+module:hook("pre-message/bare", function(event)
     process_message(event.stanza, "sent");
     return nil;
 end, 10);
