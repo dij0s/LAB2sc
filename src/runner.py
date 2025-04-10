@@ -9,6 +9,9 @@ import aiosasl
 import aioxmpp.security_layer
 from spade.container import Container
 
+from spade.message import Message
+
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -17,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 from alphabot_controller import AlphabotController
 from camera_receiver import ReceiverAgent
+from calibration_sender import CalibrationSender
 
 
 def create_ssl_context():
@@ -62,9 +66,7 @@ async def run_alphabot_controller(instructions=[]):
     for i, instr in enumerate(final_instructions):
         logger.info(f"Instruction {i + 1}: {instr}")
 
-    alphabot_controller = AlphabotController(
-        jid=xmpp_jid, password=xmpp_password
-    )
+    alphabot_controller = AlphabotController(jid=xmpp_jid, password=xmpp_password)
     await alphabot_controller.start(auto_register=True)
 
     send_instructions_behaviour = alphabot_controller.SendInstructionsBehaviour(
@@ -93,6 +95,20 @@ async def run_camera_receiver():
     return receiver
 
 
+async def startCalibration():
+    xmpp_jid = os.getenv("XMPP_JID")
+    xmpp_password = os.getenv("XMPP_PASSWORD")
+
+    calib_sender = CalibrationSender(xmpp_jid, xmpp_password)
+    await calib_sender.start(auto_register=True)
+    if not calib_sender.is_alive():
+        logger.error("Calibration sender agent couldn't connect.")
+        await calib_sender.stop()
+        return None
+    logger.info("Calibration sender agent started successfully.")
+
+    return calib_sender
+
 async def main(command_file="./commands/command.json"):
     os.makedirs("received_photos", exist_ok=True)
 
@@ -102,6 +118,11 @@ async def main(command_file="./commands/command.json"):
     commands = data["commands"]
 
     try:
+        # calib_sender = await startCalibration()
+
+        # while calib_sender.is_alive():
+        #     await asyncio.sleep(1)
+
         alphabot_controller = await run_alphabot_controller(commands)
         camera_receiver = await run_camera_receiver()
 
@@ -114,9 +135,7 @@ async def main(command_file="./commands/command.json"):
 
         logger.info("Both agents running. Press Ctrl+C to stop.")
 
-        while any(
-            behavior.is_running for behavior in alphabot_controller.behaviours
-        ):
+        while any(behavior.is_running for behavior in alphabot_controller.behaviours):
             await asyncio.sleep(1)
 
         logger.info("Alphabot controller has completed all instructions.")
@@ -127,6 +146,8 @@ async def main(command_file="./commands/command.json"):
     except KeyboardInterrupt:
         logger.info("Received keyboard interrupt. Shutting down...")
     finally:
+        # if "calib_sender" in locals():
+        #     await calib_sender.stop()
         if "alphabot_controller" in locals():
             await alphabot_controller.stop()
         if "camera_receiver" in locals():
