@@ -2,11 +2,7 @@
   "commands": [
     {
       "command": "forwardSafe",
-      "args": ["2"]
-    },
-    {
-      "command": "turn",
-      "args": ["-90", "8"]
+      "args": ["0"]
     }
   ]
 }

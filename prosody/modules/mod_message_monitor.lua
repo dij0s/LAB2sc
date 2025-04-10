@@ -9,9 +9,8 @@ local api_token = module:get_option_string("message_monitor_token", "your_secret
 
 module:log("info", "Message monitor initialized. Endpoint: %s", api_endpoint);
 
--- Process messages
-module:hook("message/full", function(event)
-    local stanza = event.stanza;
+-- Helper function to process and send message data
+local function process_message(stanza, direction)
     local from = stanza.attr.from;
     local to = stanza.attr.to;
     local body = stanza:get_child_text("body");
@@ -24,6 +23,7 @@ module:hook("message/full", function(event)
             to = to,
             body = body,
             type = message_type,
+            direction = direction,
             timestamp = os.time()
         }
 
@@ -41,11 +41,20 @@ module:hook("message/full", function(event)
             end
         end);
 
-        module:log("debug", "Forwarded message from %s to %s", from, to);
+        module:log("debug", "Forwarded %s message from %s to %s", direction, from, to);
     end
+end
 
-    -- Allow the message to continue processing normally
+-- Hook for incoming messages
+module:hook("message/full", function(event)
+    process_message(event.stanza, "received");
     return nil;
-end, 10); -- Priority 10 to run early but not interfere with other modules
+end, 10);
+
+-- Hook for outgoing messages
+module:hook("message/out", function(event)
+    process_message(event.stanza, "sent");
+    return nil;
+end, 10);
 
 module:log("info", "Message monitor module loaded successfully");
