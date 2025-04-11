@@ -6,7 +6,9 @@ plugin_paths = { "/usr/lib/prosody/modules-extra" }
 
 -- HTTP server configuration
 http_ports = { 5280 }
+https_ports = { 5281 }
 http_interfaces = { "0.0.0.0" }
+http_default_host = "http.prosody"
 
 -- Module routes
 http_paths = {
@@ -58,3 +60,7 @@ ssl = {
 -- Define virtual host
 VirtualHost "prosody"
 authentication = "internal_plain"
+
+VirtualHost "http.prosody"
+modules_enabled = { "bosh", "websocket", "http_files", "ban_handler" }
+http_host = "http.prosody"

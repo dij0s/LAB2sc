@@ -35,57 +35,6 @@ const server = serve({
       return new Response(null, { headers: corsHeaders });
     }
 
-    // Test endpoint for Prosody connection
-    if (url.pathname === "/api/test-prosody" && req.method === "GET") {
-      const testUrls = [
-        "http://172.20.0.3:5280/", // Try root path
-        "http://172.20.0.3:5280/status", // Try status endpoint
-        "http://prosody:5280/", // Try root path with hostname
-        "http://prosody:5280/status", // Try status endpoint with hostname
-      ];
-
-      const results = {};
-
-      for (const testUrl of testUrls) {
-        try {
-          console.log(`Testing URL: ${testUrl}`);
-          const response = await fetch(testUrl, {
-            method: "GET",
-            headers: {
-              Accept: "*/*",
-            },
-          });
-
-          results[testUrl] = {
-            ok: response.ok,
-            status: response.status,
-            statusText: response.statusText,
-            headers: Object.fromEntries(response.headers.entries()),
-            body: await response.text(),
-          };
-
-          console.log(`Response for ${testUrl}:`, results[testUrl]);
-        } catch (error) {
-          console.error(`Error testing ${testUrl}:`, {
-            message: error.message,
-            cause: error.cause,
-            stack: error.stack,
-          });
-
-          results[testUrl] = {
-            error: error.message,
-            details: error.stack,
-          };
-        }
-      }
-
-      return addCorsHeaders(
-        new Response(JSON.stringify(results, null, 2), {
-          headers: { "Content-Type": "application/json" },
-        }),
-      );
-    }
-
     // WebSocket upgrade
     if (url.pathname === "/ws") {
       console.log("WebSocket connection attempt");
@@ -130,7 +79,7 @@ const server = serve({
       return req.json().then(async (data) => {
         try {
           // Updated URL to match the new module path
-          const response = await fetch("http://prosody:5280/ban_handler/", {
+          const response = await fetch("http://172.20.0.3:5280/ban", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
