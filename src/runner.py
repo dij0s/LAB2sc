@@ -124,14 +124,14 @@ async def main(command_file="./commands/command.json"):
         #     await asyncio.sleep(1)
 
         alphabot_controller = await run_alphabot_controller(commands)
-        camera_receiver = await run_camera_receiver()
+        # camera_receiver = await run_camera_receiver()
 
-        if not camera_receiver:
-            logger.error(
-                "Failed to start camera receiver. Stopping alphabot controller."
-            )
-            await alphabot_controller.stop()
-            return
+        # if not camera_receiver:
+        #     logger.error(
+        #         "Failed to start camera receiver. Stopping alphabot controller."
+        #     )
+        #     await alphabot_controller.stop()
+        #     return
 
         logger.info("Both agents running. Press Ctrl+C to stop.")
 
@@ -140,7 +140,7 @@ async def main(command_file="./commands/command.json"):
 
         logger.info("Alphabot controller has completed all instructions.")
 
-        while camera_receiver.is_alive():
+        while alphabot_controller.is_alive():
             await asyncio.sleep(1)
 
     except KeyboardInterrupt:
@@ -150,8 +150,8 @@ async def main(command_file="./commands/command.json"):
         #     await calib_sender.stop()
         if "alphabot_controller" in locals():
             await alphabot_controller.stop()
-        if "camera_receiver" in locals():
-            await camera_receiver.stop()
+        # if "camera_receiver" in locals():
+        #     await camera_receiver.stop()
         logger.info("All agents stopped.")
 
 

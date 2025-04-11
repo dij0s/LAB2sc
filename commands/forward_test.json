@@ -2,9 +2,7 @@
   "commands": [
     {
       "command": "forwardSafe",
-      "args": [
-        "700"
-      ]
+      "args": ["90"]
     }
   ]
 }
