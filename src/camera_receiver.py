@@ -20,6 +20,10 @@ class ReceiverAgent(agent.Agent):
 
             # Send the message
             await self.send(msg)
+            await self.send(msg)
+            await asyncio.sleep(3.0)
+            await self.send(msg)
+
             print("Request for photo sent.")
 
     class ReceivePhotoBehaviour(behaviour.CyclicBehaviour):
