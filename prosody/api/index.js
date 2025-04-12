@@ -78,8 +78,7 @@ const server = serve({
 
       return req.json().then(async (data) => {
         try {
-          // Updated URL to match the new module path
-          const response = await fetch("http://172.20.0.3:5280/ban", {
+          const response = await fetch("http://internal-api:3001/ban", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -92,7 +91,6 @@ const server = serve({
             console.error("HTTP Error Response:", {
               status: response.status,
               statusText: response.statusText,
-              headers: Object.fromEntries(response.headers.entries()),
             });
             const errorText = await response.text();
             console.error("Error response body:", errorText);
