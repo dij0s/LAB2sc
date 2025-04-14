@@ -117,37 +117,37 @@ async def main(command_file="./commands/command.json"):
     commands = data["commands"]
 
     try:
-        #receiver_agent = await run_camera_receiver()
+        alphabot_controller = await run_alphabot_controller(commands)
+        camera_receiver = await run_camera_receiver()
 
-       # if not receiver_agent:
-       #     logger.error(
-       #         "Failed to start camera receiver. Stopping alphabot controller."
-       #     )
-            # await alphabot_controller.stop()
-       #     return
+        if not camera_receiver:
+            logger.error(
+                "Failed to start camera receiver. Stopping alphabot controller."
+            )
+            await alphabot_controller.stop()
+            return
 
-        #while receiver_agent.is_alive():
-        #    await asyncio.sleep(1)
-        calib_sender = await startCalibration()
+        logger.info("Both agents running. Press Ctrl+C to stop.")
 
-        while calib_sender.is_alive():
+        while any(
+            behavior.is_running for behavior in alphabot_controller.behaviours
+        ):
             await asyncio.sleep(1)
 
-        # if not camera_receiver:
-        #     logger.error(
-        #         "Failed to start camera receiver. Stopping alphabot controller."
-        #     )
-        #     await alphabot_controller.stop()
-        #     return
+        logger.info("Alphabot controller has completed all instructions.")
 
-        # logger.info("Both agents running. Press Ctrl+C to stop.")
-
+        while camera_receiver.is_alive():
+            await asyncio.sleep(1)
 
     except KeyboardInterrupt:
         logger.info("Received keyboard interrupt. Shutting down...")
     finally:
-        if "calib_sender" in locals():
-            await calib_sender.stop()
+        if "alphabot_controller" in locals():
+            await alphabot_controller.stop()
+        if "camera_receiver" in locals():
+            await camera_receiver.stop()
+        logger.info("All agents stopped.")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

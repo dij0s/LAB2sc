@@ -2,7 +2,7 @@
   "commands": [
     {
       "command": "forwardSafe",
-      "args": ["0"]
+      "args": ["10"]
     }
   ]
 }
