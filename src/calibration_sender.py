@@ -13,7 +13,7 @@ class CalibrationSender(Agent):
         def __init__(self, recipient_jid):
             super().__init__()
             self.recipient_jid = recipient_jid
-            self.message_body = "start_calibration"
+            self.message_body = "<"
 
         async def run(self):
             msg = Message(to=self.recipient_jid)

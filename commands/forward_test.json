@@ -1,9 +1,9 @@
 {
   "commands": [
     {
-      "command": "turn",
+      "command": "forward",
       "args": [
-        "90"
+        "150"
       ]
     }
   ]

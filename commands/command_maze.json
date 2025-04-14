@@ -1,0 +1,88 @@
+{
+  "commands": [
+    {
+      "command": "forwardSafe",
+      "args": [
+        "140"
+      ]
+    },
+    {
+      "command": "turn",
+      "args": [
+        "180",
+        "10"
+      ]
+    },
+    {
+      "command": "forwardSafe",
+      "args": [
+        "140"
+      ]
+    },
+    {
+      "command": "turn",
+      "args": [
+        "180",
+        "10"
+      ]
+    },
+    {
+      "command": "forwardSafe",
+      "args": [
+        "140"
+      ]
+    },
+    {
+      "command": "turn",
+      "args": [
+        "-180",
+        "10"
+      ]
+    },
+    {
+      "command": "forwardSafe",
+      "args": [
+        "140"
+      ]
+    },
+    {
+      "command": "turn",
+      "args": [
+        "-180",
+        "10"
+      ]
+    },
+    {
+      "command": "forwardSafe",
+      "args": [
+        "140"
+      ]
+    },
+    {
+      "command": "turn",
+      "args": [
+        "180",
+        "10"
+      ]
+    },
+    {
+      "command": "forwardSafe",
+      "args": [
+        "340"
+      ]
+    },
+    {
+      "command": "turn",
+      "args": [
+        "180",
+        "10"
+      ]
+    },
+    {
+      "command": "forwardSafe",
+      "args": [
+        "140"
+      ]
+    }
+  ]
+}
