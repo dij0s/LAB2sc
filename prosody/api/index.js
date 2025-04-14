@@ -1,8 +1,7 @@
 // Bun-compatible API server for message monitoring and control
 import { serve } from "bun";
-import http from "node:http";
 
-// Common CORS headers and helper function (keep as is)
+// Common CORS headers and helper function
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
@@ -28,21 +27,36 @@ const clients = new Set();
 const server = serve({
   port: process.env.PORT || 3000,
   async fetch(req) {
-    const url = new URL(req.url);
-
-    // Handle CORS preflight requests
+    // Add CORS headers to all responses
     if (req.method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders });
+      return new Response(null, {
+        headers: {
+          ...corsHeaders,
+          "Access-Control-Allow-Headers":
+            "Content-Type, Authorization, Upgrade, Sec-WebSocket-Protocol",
+        },
+      });
     }
 
-    // WebSocket upgrade
+    const url = new URL(req.url);
+
+    // WebSocket upgrade with explicit CORS handling
     if (url.pathname === "/ws") {
-      console.log("WebSocket connection attempt");
-      const upgraded = server.upgrade(req);
+      console.log(
+        "WebSocket connection attempt from:",
+        req.headers.get("origin"),
+      );
+
+      // Handle WebSocket upgrade
+      const upgraded = server.upgrade(req, {
+        headers: corsHeaders,
+      });
+
       if (upgraded) {
         console.log("WebSocket upgrade successful");
         return undefined;
       }
+
       console.log("WebSocket upgrade failed");
       return addCorsHeaders(
         new Response("WebSocket upgrade failed", { status: 400 }),
@@ -158,15 +172,23 @@ const server = serve({
     open(ws) {
       console.log("Client connected");
       clients.add(ws);
+      // Send an initial message to confirm connection
+      ws.send(JSON.stringify({ type: "connection", status: "connected" }));
     },
     message(ws, message) {
       console.log("Received WebSocket message:", message);
+      // Echo the message back to confirm receipt
+      ws.send(JSON.stringify({ type: "echo", message }));
     },
     close(ws) {
       console.log("Client disconnected");
       clients.delete(ws);
     },
+    error(ws, error) {
+      console.error("WebSocket error:", error);
+      clients.delete(ws);
+    },
   },
 });
 
-console.log(`Server running on port ${server.port}`);
+console.log(`Server running at http://localhost:${server.port}`);
