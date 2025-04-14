@@ -1,8 +1,10 @@
 {
   "commands": [
     {
-      "command": "forwardSafe",
-      "args": ["90"]
+      "command": "forward",
+      "args": [
+        "150"
+      ]
     }
   ]
 }

@@ -1,5 +1,7 @@
 prosody/certs
 received_photos/*
+__pycache__
+.venv
 
 .DS_Store
 .env

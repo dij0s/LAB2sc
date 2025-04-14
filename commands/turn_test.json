@@ -2,7 +2,9 @@
   "commands": [
     {
       "command": "turn",
-      "args": ["90", "10"]
+      "args": [
+        "90"
+      ]
     }
   ]
 }

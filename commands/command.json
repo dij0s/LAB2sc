@@ -1,9 +1,9 @@
 {
   "commands": [
     {
-      "command": "forwardSafe",
+      "command": "turn",
       "args": [
-        "700"
+        "90"
       ]
     }
   ]
